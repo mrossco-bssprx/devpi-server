@@ -1,0 +1,13 @@
+services:
+  devpi-server:
+    build:
+      context: ./devpi-server
+      args:
+        VERSION: "0.0.1"
+        VCS_REF: ""
+        BUILD_DATE: "2023-12-28T16:36:00Z"
+    hostname: devpi-server
+    ports:
+      - 3141:3141
+    volumes:
+      - ./volumes/devpi:/usr/lib/devpi
