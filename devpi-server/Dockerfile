@@ -31,12 +31,14 @@ RUN set -x \
 	&& useradd --no-log-init -r -u $PUID -g $PGID devpi
 
 # copy in sensible defaults for devpi
-COPY entrypoint.sh entrypoint-functions.sh healthcheck.sh /usr/local/bin/
+COPY requirements.txt entrypoint.sh entrypoint-functions.sh healthcheck.sh /usr/local/bin/
 
 # install unifi dependencies
 RUN set -x \
     && fetchDeps=' \
         sudo \
+        git \
+        procps \
     ' \
     && apt-get update \
     && apt-get install -y --no-install-recommends $fetchDeps \
@@ -46,7 +48,7 @@ RUN set -x \
 # Install DevPi
 WORKDIR ${DEVPISERVER_SERVERDIR}
 RUN sudo su - devpi \
-    && pip install -U devpi-server devpi-client devpi-web
+    && pip install -r /usr/local/bin/requirements.txt
 
 EXPOSE 3141
 VOLUME ["$DEVPISERVER_SERVERDIR"]

@@ -9,8 +9,6 @@ IFS=$'\n\t'
 SCRIPT_VERSION="1.0"
 # Last updated date: 2023-12-28
 
-set -Eeuo pipefail
-
 if [ "${DEBUG}" == 'true' ]; then
     set -x
 fi
@@ -57,3 +55,20 @@ if [ "$initialize" == "yes" ]; then
     echo -n "$DEVPI_ROOT_PASSWORD" > "$DEVPISERVER_SERVERDIR/.root_password"
     devpi logoff
 fi
+
+echo "ENTRYPOINT: Watching devpi-server"
+PID=$(pgrep devpi-server)
+
+if [ -z "$PID" ]; then
+    echo "ENTRYPOINT: Could not determine PID of devpi-server!"
+    exit 1
+fi
+
+set +e
+
+while : ; do
+    kill -0 "$PID" > /dev/null 2>&1 || break
+    sleep 2s
+done
+
+echo "ENTRYPOINT: devpi-server died, exiting..."
